@@ -55,11 +55,11 @@
               "count": 1
             },
             {
-              "xml": "<meta-data android:name=\"CLEVERTAP_ACCOUNT_ID\" android:value=\"R57-R8W-557Z\" />",
+              "xml": "<meta-data android:name=\"CLEVERTAP_ACCOUNT_ID\" android:value=\"xxxxxxx\" />",
               "count": 2
             },
             {
-              "xml": "<meta-data android:name=\"CLEVERTAP_TOKEN\" android:value=\"0b2-a52\" />",
+              "xml": "<meta-data android:name=\"CLEVERTAP_TOKEN\" android:value=\"xxxxx\" />",
               "count": 2
             },
             {
@@ -100,8 +100,8 @@
       "PACKAGE_NAME": "com.clevertap.cordovahybridappwithwebview"
     },
     "clevertap-cordova": {
-      "CLEVERTAP_ACCOUNT_ID": "R57-R8W-557Z",
-      "CLEVERTAP_TOKEN": "0b2-a52",
+      "CLEVERTAP_ACCOUNT_ID": "xxxxx",
+      "CLEVERTAP_TOKEN": "xxxx",
       "CLEVERTAP_REGION": " ",
       "FIREBASE_MESSAGING_VERSION": "23.0.6",
       "PACKAGE_NAME": "com.clevertap.cordovahybridappwithwebview"
