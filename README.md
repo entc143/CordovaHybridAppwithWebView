@@ -6,7 +6,7 @@ A hybrid **Apache Cordova** sample app that demonstrates a full **CleverTap** in
 - **Button 1 — Stop Counter:** stops the counter and **creates a CleverTap user profile**.
 - **Button 2 — Continue:** opens a **WebView "Thank You" page** that fires a `thankss you` event and renders **Native Display banners** with viewed/clicked tracking.
 
-> Account ID: `R57-R8W-557Z` &nbsp;·&nbsp; Token: `0b2-a52`
+> Account ID: `XXXXXXXX` &nbsp;·&nbsp; Token: `XXXXXX`
 > Credentials are set in `config.xml`, and mirrored in the Android manifest and iOS plist. The native plugin reads them at init — they are never hard-coded in JS.
 
 All CleverTap method names in this project are taken directly from CleverTap's official Cordova documentation:
@@ -67,8 +67,8 @@ cordova platform add ios
 
 # 3) Add the CleverTap plugin WITH your credentials
 cordova plugin add https://github.com/CleverTap/clevertap-cordova.git \
-  --variable CLEVERTAP_ACCOUNT_ID="R57-R8W-557Z" \
-  --variable CLEVERTAP_TOKEN="0b2-a52"
+  --variable CLEVERTAP_ACCOUNT_ID="xxxxxx" \
+  --variable CLEVERTAP_TOKEN="xxxxx"
 
 # 4) Add the InAppBrowser plugin (used as the Thank-You WebView)
 cordova plugin add cordova-plugin-inappbrowser
@@ -214,7 +214,7 @@ event back in the Cordova app.
   Quick Start guide.
 - **iOS push (APNs)** requires push capability + certificates configured in your
   Apple Developer account; update `aps-environment` to `production` for release.
-- Credentials in this sample are the ones provided (`R57-R8W-557Z` / `0b2-a52`).
+- Credentials in this sample are the ones provided (`xxxxxx` / `xxxxx`).
   Rotate/replace them for your own project.
 
 ## References
