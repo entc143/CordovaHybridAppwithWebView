@@ -1,0 +1,203 @@
+//
+//  CleverTap+InAppsResponseHandler.m
+//  CleverTapSDK
+//
+//  Created by Nikola Zagorchev on 9.10.23.
+//  Copyright © 2023 CleverTap. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+#import "CTPreferences.h"
+#import "CTInAppDisplayManager.h"
+#import "CTInAppFCManager.h"
+#import "CTUIUtils.h"
+#import "CTConstants.h"
+#import "CleverTapInternal.h"
+#import "CTUtils.h"
+#import "CTCustomTemplatesManager-Internal.h"
+#if __has_include(<CleverTapSDK/CleverTapSDK-Swift.h>)
+#import <CleverTapSDK/CleverTapSDK-Swift.h>
+#else
+#import "CleverTapSDK-Swift.h"
+#endif
+
+@implementation CleverTap(InAppsResponseHandler)
+
+- (void)handleInAppResponse:(NSDictionary *)jsonResp {
+#if !CLEVERTAP_NO_INAPP_SUPPORT
+    if (self.config.analyticsOnly || [CTUIUtils runningInsideAppExtension]) {
+        return;
+    }
+    
+    // Parse global limits
+    NSNumber *perSession = jsonResp[CLTAP_INAPP_GLOBAL_CAP_SESSION_JSON_RESPONSE_KEY];
+    if (perSession == nil) {
+        perSession = @10;
+    }
+    NSNumber *perDay = jsonResp[CLTAP_INAPP_GLOBAL_CAP_DAY_JSON_RESPONSE_KEY];
+    if (perDay == nil) {
+        perDay = @10;
+    }
+    [self.inAppFCManager updateGlobalLimitsPerDay:perDay.intValue andPerSession:perSession.intValue];
+    
+//     Legacy SS in-apps (inapp_notifs -> NORMAL/DELAYED in-app campaigns WITHOUT advance display rules)
+    ImmediateAndDelayed *partitionedLegacyInApps = [InAppDurationPartitioner partitionImmediateDelayedInApps:jsonResp[CLTAP_INAPP_JSON_RESPONSE_KEY]];
+    if ([partitionedLegacyInApps hasImmediateInApps]) {
+        [self.inAppDisplayManager _addInAppNotificationsToQueue:partitionedLegacyInApps.immediateInApps];
+    }
+    if ([partitionedLegacyInApps hasDelayedInApps]) {
+        [self.inAppDisplayManager scheduleDelayedInAppsForAllModes:partitionedLegacyInApps.delayedInApps];
+    }
+
+    // Legacy SS in-apps meta (inapp_notifs_meta -> IN-ACTION in-app campaigns WITHOUT advance display rules)
+    InActionOnly *partitionedLegacyMetaInApps = [InAppDurationPartitioner partitionLegacyMetaInApps:jsonResp[CLTAP_INAPP_META_KEY]];
+    if ([partitionedLegacyMetaInApps hasInActionInApps]) {
+        // Schedule in-action timers
+        [self.inAppDisplayManager scheduleInActionInApps:partitionedLegacyMetaInApps.inActionInApps];
+    }
+
+    // App launch SS in-apps (inapp_notifs_applaunched -> NORMAL/DELAYED in-app campaigns WITH/WITHOUT advance display rules on app launched event)
+    ImmediateAndDelayed *partitionedAppLaunchServerSideInApps = [InAppDurationPartitioner partitionImmediateDelayedInApps:jsonResp[CLTAP_INAPP_SS_APP_LAUNCHED_JSON_RESPONSE_KEY]];
+    if ([partitionedAppLaunchServerSideInApps hasImmediateInApps]) {
+        @try {
+            [self.inAppEvaluationManager evaluateOnAppLaunchedServerSide:partitionedAppLaunchServerSideInApps.immediateInApps];
+        } @catch (NSException *e) {
+            CleverTapLogInternal(self.config.logLevel, @"%@: Error evaluating App Launched notifications JSON: %@", self, e.debugDescription);
+        }
+    }
+    if ([partitionedAppLaunchServerSideInApps hasDelayedInApps]) {
+        @try {
+            [self.inAppEvaluationManager evaluateOnAppLaunchedDelayedServerSide:partitionedAppLaunchServerSideInApps.delayedInApps];
+        } @catch (NSException *e) {
+            CleverTapLogInternal(self.config.logLevel, @"%@: Error evaluating App Launched notifications JSON: %@", self, e.debugDescription);
+        }
+    }
+
+    // App launch SS in-apps meta (inapp_notifs_applaunched_meta -> IN-ACTION in-app campaigns WITH/WITHOUT advance display rules on app launched event)
+    InActionOnly *partitionedAppLaunchServerSideMetaInApps = [InAppDurationPartitioner partitionAppLaunchServerSideMetaInApps:jsonResp[CLTAP_INAPP_SS_APP_LAUNCHED_META_KEY]];
+    if ([partitionedAppLaunchServerSideMetaInApps hasInActionInApps]) {
+        // Schedule in-action from App Launch SS meta
+        [self.inAppEvaluationManager evaluateOnAppLaunchedInActionServerSide:partitionedAppLaunchServerSideMetaInApps.inActionInApps];
+    }
+    
+    // SS in-apps (inapp_notifs_ss -> IN-ACTION + NORMAL in-app campaigns WITH advance display rules)
+    UnknownAndInAction *partitionedServerSideInAppsMeta = [InAppDurationPartitioner partitionServerSideMetaInApps:jsonResp[CLTAP_INAPP_SS_JSON_RESPONSE_KEY]];
+        // delayAfterTrigger only comes within inapp_notifs(Legacy SS, with in-app content)
+    if ([partitionedServerSideInAppsMeta hasUnknownDurationInApps]) {//storeServerSideInAppsMetaData
+        [self.inAppStore storeServerSideInApps:partitionedServerSideInAppsMeta.unknownDurationInApps];
+    }
+    if ([partitionedServerSideInAppsMeta hasInActionInApps]) {
+        [self.inAppStore storeServerSideInActionMetaData:partitionedServerSideInAppsMeta.inActionInApps];
+    }
+
+    // CS in-apps (inapp_notifs_cs)
+    ImmediateAndDelayed *partitionedClientSideInApps = [InAppDurationPartitioner partitionImmediateDelayedInApps:jsonResp[CLTAP_INAPP_CS_JSON_RESPONSE_KEY]];
+
+    if ([partitionedClientSideInApps hasImmediateInApps]) {
+        NSArray *immediateInApps = partitionedClientSideInApps.immediateInApps;
+        [self.inAppStore storeClientSideInApps:immediateInApps];
+        // Preload CS in-app images to disk cache
+        [self downloadMediaURLs:immediateInApps];
+        // Preload CS custom template in-app files to disk cache
+        [self downloadCustomTemplatesFileURLs:immediateInApps];
+    }
+    if ([partitionedClientSideInApps hasDelayedInApps]) {
+        NSArray *delayedInApps = partitionedClientSideInApps.delayedInApps;
+        [self.inAppStore storeDelayedClientSideInApps:delayedInApps];
+        // Preload CS in-app images to disk cache
+        [self downloadMediaURLs:delayedInApps];
+        // Preload CS custom template in-app files to disk cache
+        [self downloadCustomTemplatesFileURLs:delayedInApps];
+    }
+    
+    // Parse in-app Mode
+    NSString *mode = jsonResp[CLTAP_INAPP_MODE_JSON_RESPONSE_KEY];
+    [self.inAppStore setMode:mode];
+    
+    // Handle stale in-apps
+    @try {
+        NSArray *stale = jsonResp[CLTAP_INAPP_STALE_JSON_RESPONSE_KEY];
+        [self.inAppFCManager removeStaleInAppCounts:stale];
+    } @catch (NSException *ex) {
+        CleverTapLogInternal(self.config.logLevel, @"%@: Failed to handle inapp_stale update: %@", self, ex.debugDescription);
+    }
+    
+    if (self.inAppDisplayManager.inAppRenderingStatus == CleverTapInAppDiscard) {
+        CleverTapLogDebug(self.config.logLevel, @"%@: InApp Notifications are set to be discarded, not saving and showing the InApp Notification", self);
+        return;
+    }
+    
+    if (self.isUserSwitching) {
+        if (jsonResp[CLTAP_INAPP_SS_APP_LAUNCHED_JSON_RESPONSE_KEY] || jsonResp[CLTAP_INAPP_JSON_RESPONSE_KEY]) {
+            // Log only if in-apps are received in the response and will not be handled.
+            CleverTapLogDebug(self.config.logLevel, @"%@: InApp Notifications will not be handled due to user switch", self);
+        }
+        // Do not show any in-apps if the user is switching. Do not trigger the fetch in-apps callback.
+        return;
+    }
+    [self triggerFetchInApps:YES];
+}
+
+- (void)downloadMediaURLs:(NSArray *)inApps {
+    NSArray<NSString *> *imageURLs = [self imageURLs:inApps];
+    [self.fileDownloader downloadFiles:imageURLs withCompletionBlock:nil];
+}
+
+- (void)downloadCustomTemplatesFileURLs:(NSArray *)inApps {
+    NSMutableSet *urls = [NSMutableSet set];
+    for (NSDictionary *inApp in inApps) {
+        NSSet *inAppFileArgsUrls = [self.customTemplatesManager fileArgsURLs:inApp];
+        [urls unionSet:inAppFileArgsUrls];
+    }
+    [self.fileDownloader downloadFiles:[urls allObjects] withCompletionBlock:nil];
+}
+
+- (NSArray<NSString *> *)imageURLs:(NSArray *)inApps {
+    NSMutableSet<NSString *> *mediaURLs = [NSMutableSet new];
+    for (NSDictionary *jsonInApp in inApps) {
+        NSDictionary *media = (NSDictionary *)jsonInApp[CLTAP_INAPP_MEDIA];
+        if (media) {
+            NSString *imageURL = [self URLFromMedia:media];
+            if (imageURL) {
+                [mediaURLs addObject:imageURL];
+            }
+        }
+        NSDictionary *mediaLandscape = (NSDictionary *)jsonInApp[CLTAP_INAPP_MEDIA_LANDSCAPE];
+        if (mediaLandscape) {
+            NSString *imageURL = [self URLFromMedia:mediaLandscape];
+            if (imageURL) {
+                [mediaURLs addObject:imageURL];
+            }
+        }
+    }
+    return [mediaURLs allObjects];
+}
+
+- (NSString *)URLFromMedia:(NSDictionary *)media {
+    NSString *contentType = media[CLTAP_INAPP_MEDIA_CONTENT_TYPE];
+    NSString *mediaUrl = media[CLTAP_INAPP_MEDIA_URL];
+    if (mediaUrl && mediaUrl.length > 0) {
+        // Preload contentType with image/jpeg or image/gif
+        if ([contentType hasPrefix:@"image"]) {
+            return mediaUrl;
+        }
+    }
+    return nil;
+}
+
+- (void)triggerFetchInApps:(BOOL)success {
+    if (self.fetchInAppsBlock) {
+        CleverTapFetchInAppsBlock block = [self.fetchInAppsBlock copy];
+        
+        [CTUtils runSyncMainQueue:^{
+            block(success);
+        }];
+        // The callback will be overridden by subsequent fetch call,
+        // if the first one has not completed yet.
+        // Callback cannot be attached to an individual fetch request, only to the queue batch.
+        self.fetchInAppsBlock = nil;
+    }
+#endif
+}
+
+@end

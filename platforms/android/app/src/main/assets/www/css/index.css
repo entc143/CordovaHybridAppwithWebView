@@ -1,0 +1,115 @@
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+:root {
+    --bg: #0d1b2a;
+    --card: #1b263b;
+    --accent: #4cc9f0;
+    --accent-2: #f72585;
+    --text: #e0e1dd;
+    --muted: #8d99ae;
+    --stop: #e63946;
+    --ok: #2a9d8f;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.app {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: env(safe-area-inset-top) 16px env(safe-area-inset-bottom) 16px;
+}
+
+.app-header { text-align: center; padding: 20px 0 8px; }
+.app-title { font-size: 18px; margin: 0; color: var(--accent); letter-spacing: .3px; }
+.ct-status { font-size: 11px; color: var(--muted); }
+
+.home {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+}
+
+.clock-card, .counter-card {
+    background: var(--card);
+    border-radius: 16px;
+    padding: 22px;
+    text-align: center;
+    box-shadow: 0 6px 18px rgba(0,0,0,.35);
+}
+
+.live-date { font-size: 16px; color: var(--muted); }
+.live-time { font-size: 34px; font-weight: 700; margin-top: 4px; font-variant-numeric: tabular-nums; }
+
+.counter-label { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); }
+.counter-value {
+    font-size: 68px;
+    font-weight: 800;
+    line-height: 1;
+    margin: 8px 0;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+}
+.counter-state { font-size: 13px; color: var(--ok); }
+.counter-state.stopped { color: var(--stop); }
+
+.button-row { display: flex; gap: 12px; }
+.btn {
+    flex: 1;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    border: none;
+    border-radius: 12px;
+    color: #fff;
+    transition: transform .05s ease, opacity .2s ease;
+}
+.btn:active { transform: scale(.97); }
+.btn-stop { background: var(--stop); }
+.btn-stop:disabled { opacity: .45; }
+.btn-primary { background: var(--accent-2); }
+
+.app-footer { text-align: center; color: var(--muted); padding: 14px 0; }
+
+/* Embedded WebView (iframe) region for the Thank-You page */
+.webview-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+}
+.webview-overlay.hidden { display: none; }
+.webview-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--card);
+    border-bottom: 1px solid #2b3a55;
+}
+.webview-back {
+    background: transparent;
+    color: var(--accent);
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 4px 6px;
+}
+.webview-title { font-size: 16px; font-weight: 700; }
+.thankyou-frame {
+    flex: 1;
+    width: 100%;
+    border: none;
+    background: var(--bg);
+}

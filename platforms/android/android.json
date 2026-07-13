@@ -1,0 +1,133 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {
+      "res/xml/config.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<feature name=\"InAppBrowser\"><param name=\"android-package\" value=\"org.apache.cordova.inappbrowser.InAppBrowser\" /></feature>",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "config.xml": {
+        "parents": {
+          "/*": [
+            {
+              "xml": "<feature name=\"CleverTapPlugin\"><param name=\"android-package\" value=\"com.clevertap.cordova.CleverTapPlugin\" /></feature>",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "AndroidManifest.xml": {
+        "parents": {
+          "/manifest": [
+            {
+              "xml": "<uses-permission android:name=\"android.permission.INTERNET\" />",
+              "count": 2
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.ACCESS_NETWORK_STATE\" />",
+              "count": 2
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.WAKE_LOCK\" />",
+              "count": 2
+            },
+            {
+              "xml": "<uses-permission android:name=\"android.permission.POST_NOTIFICATIONS\" />",
+              "count": 1
+            }
+          ],
+          "/manifest/application": [
+            {
+              "xml": "<service android:exported=\"true\" android:name=\"com.clevertap.android.sdk.pushnotification.fcm.FcmMessageListenerService\"><intent-filter><action android:name=\"com.google.firebase.MESSAGING_EVENT\" /></intent-filter></service>",
+              "count": 1
+            },
+            {
+              "xml": "<service android:exported=\"false\" android:name=\"com.clevertap.android.sdk.pushnotification.CTNotificationIntentService\"><intent-filter><action android:name=\"com.clevertap.PUSH_EVENT\" /></intent-filter></service>",
+              "count": 1
+            },
+            {
+              "xml": "<meta-data android:name=\"CLEVERTAP_ACCOUNT_ID\" android:value=\"R57-R8W-557Z\" />",
+              "count": 2
+            },
+            {
+              "xml": "<meta-data android:name=\"CLEVERTAP_TOKEN\" android:value=\"0b2-a52\" />",
+              "count": 2
+            },
+            {
+              "xml": "<meta-data android:name=\"CLEVERTAP_REGION\" android:value=\" \" />",
+              "count": 1
+            },
+            {
+              "xml": "<receiver android:enabled=\"true\" android:exported=\"false\" android:name=\"com.clevertap.android.sdk.pushnotification.CTPushNotificationReceiver\"></receiver>",
+              "count": 1
+            },
+            {
+              "xml": "<meta-data android:name=\"CLEVERTAP_ENCRYPTION_LEVEL\" android:value=\"1\" />",
+              "count": 1
+            },
+            {
+              "xml": "<service android:exported=\"false\" android:name=\"com.clevertap.android.sdk.pushnotification.fcm.FcmMessageListenerService\"><intent-filter><action android:name=\"com.google.firebase.MESSAGING_EVENT\" /></intent-filter></service>",
+              "count": 1
+            }
+          ]
+        }
+      },
+      "undefined": {
+        "parents": {
+          "/manifest/application": [
+            {
+              "xml": "<application android:name=\"com.clevertap.android.sdk.Application\" />",
+              "count": 1,
+              "mode": "merge",
+              "id": "config.xml"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "installed_plugins": {
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.clevertap.cordovahybridappwithwebview"
+    },
+    "clevertap-cordova": {
+      "CLEVERTAP_ACCOUNT_ID": "R57-R8W-557Z",
+      "CLEVERTAP_TOKEN": "0b2-a52",
+      "CLEVERTAP_REGION": " ",
+      "FIREBASE_MESSAGING_VERSION": "23.0.6",
+      "PACKAGE_NAME": "com.clevertap.cordovahybridappwithwebview"
+    }
+  },
+  "dependent_plugins": {},
+  "modules": [
+    {
+      "id": "cordova-plugin-inappbrowser.inappbrowser",
+      "file": "plugins/cordova-plugin-inappbrowser/www/inappbrowser.js",
+      "pluginId": "cordova-plugin-inappbrowser",
+      "clobbers": [
+        "cordova.InAppBrowser.open"
+      ]
+    },
+    {
+      "id": "clevertap-cordova.CleverTap",
+      "file": "plugins/clevertap-cordova/www/CleverTap.js",
+      "pluginId": "clevertap-cordova",
+      "clobbers": [
+        "CleverTap"
+      ]
+    }
+  ],
+  "plugin_metadata": {
+    "cordova-plugin-inappbrowser": "6.0.1",
+    "clevertap-cordova": "5.0.0"
+  }
+}

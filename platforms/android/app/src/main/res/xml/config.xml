@@ -1,0 +1,57 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.clevertap.cordovahybridappwithwebview" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:gap="http://phonegap.com/ns/1.0">
+    <feature name="InAppBrowser">
+        <param name="android-package" value="org.apache.cordova.inappbrowser.InAppBrowser" />
+    </feature>
+    <feature name="CleverTapPlugin">
+        <param name="android-package" value="com.clevertap.cordova.CleverTapPlugin" />
+    </feature>
+    <name>CordovaHybridAppwithWebView</name>
+    <description>
+        A hybrid Cordova sample app demonstrating a live auto-incrementing counter,
+        a WebView "Thank You" page, and full CleverTap integration: Push Notifications
+        (with foreground / background / killed impression tracking), In-App messages,
+        and App Native Display banners.
+    </description>
+    <author email="sachin.gajbhiye@clevertap.com" href="https://clevertap.com">
+        CleverTap Onboarding
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <gap:plugin name="clevertap-cordova" source="npm">
+        <param name="CLEVERTAP_ACCOUNT_ID" value="R57-R8W-557Z" />
+        <param name="CLEVERTAP_TOKEN" value="0b2-a52" />
+    </gap:plugin>
+    <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application" xmlns:android="http://schemas.android.com/apk/res/android">
+        <application android:name="com.clevertap.android.sdk.Application" />
+    </edit-config>
+    <config-file parent="/manifest/application" target="AndroidManifest.xml">
+        <meta-data android:name="CLEVERTAP_ACCOUNT_ID" android:value="R57-R8W-557Z" />
+        <meta-data android:name="CLEVERTAP_TOKEN" android:value="0b2-a52" />
+        <meta-data android:name="CLEVERTAP_ENCRYPTION_LEVEL" android:value="1" />
+        <service android:exported="false" android:name="com.clevertap.android.sdk.pushnotification.fcm.FcmMessageListenerService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+    </config-file>
+    <config-file parent="/manifest" target="AndroidManifest.xml">
+        <uses-permission android:name="android.permission.INTERNET" />
+        <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+        <uses-permission android:name="android.permission.WAKE_LOCK" />
+        <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    </config-file>
+    <preference name="loglevel" value="DEBUG" />
+    <preference name="android-build-tool" value="gradle" />
+    <preference name="AndroidXEnabled" value="true" />
+    <preference name="android-minSdkVersion" value="21" />
+    <preference name="android-targetSdkVersion" value="34" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="DisallowOverscroll" value="true" />
+</widget>

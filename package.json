@@ -1,0 +1,24 @@
+{
+  "name": "cordova-hybrid-app-with-webview",
+  "displayName": "CordovaHybridAppwithWebView",
+  "version": "1.0.0",
+  "description": "Cordova hybrid sample app with live counter, WebView Thank You page and CleverTap Push / In-App / Native Display integration.",
+  "main": "index.js",
+  "author": "CleverTap Onboarding",
+  "license": "MIT",
+  "cordova": {
+    "platforms": [
+      "android",
+      "ios"
+    ],
+    "plugins": {
+      "cordova-plugin-inappbrowser": {}
+    }
+  },
+  "devDependencies": {
+    "clevertap-cordova": "github:CleverTap/clevertap-cordova",
+    "cordova-android": "^12.0.1",
+    "cordova-ios": "^7.0.0",
+    "cordova-plugin-inappbrowser": "^6.0.0"
+  }
+}

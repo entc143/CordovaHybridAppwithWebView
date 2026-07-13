@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.clevertap.cordovahybridappwithwebview" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:gap="http://phonegap.com/ns/1.0">
+    <feature name="CDVWebViewEngine">
+        <param name="ios-package" value="CDVWebViewEngine" />
+    </feature>
+    <feature name="LaunchScreen">
+        <param name="ios-package" value="CDVLaunchScreen" />
+    </feature>
+    <feature name="LocalStorage">
+        <param name="ios-package" value="CDVLocalStorage" />
+    </feature>
+    <feature name="Console">
+        <param name="ios-package" value="CDVLogger" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="HandleOpenUrl">
+        <param name="ios-package" value="CDVHandleOpenURL" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="IntentAndNavigationFilter">
+        <param name="ios-package" value="CDVIntentAndNavigationFilter" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="GestureHandler">
+        <param name="ios-package" value="CDVGestureHandler" />
+        <param name="onload" value="true" />
+    </feature>
+    <feature name="InAppBrowser">
+        <param name="ios-package" value="CDVWKInAppBrowser" />
+        <param name="onload" value="true" />
+    </feature>
+    <name>CordovaHybridAppwithWebView</name>
+    <description>
+        A hybrid Cordova sample app demonstrating a live auto-incrementing counter,
+        a WebView "Thank You" page, and full CleverTap integration: Push Notifications
+        (with foreground / background / killed impression tracking), In-App messages,
+        and App Native Display banners.
+    </description>
+    <author email="sachin.gajbhiye@clevertap.com" href="https://clevertap.com">
+        CleverTap Onboarding
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <allow-intent href="http://*/*" />
+    <allow-intent href="https://*/*" />
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <gap:plugin name="clevertap-cordova" source="npm">
+        <param name="CLEVERTAP_ACCOUNT_ID" value="R57-R8W-557Z" />
+        <param name="CLEVERTAP_TOKEN" value="0b2-a52" />
+    </gap:plugin>
+    <config-file parent="CleverTapAccountID" target="*-Info.plist">
+        <string>R57-R8W-557Z</string>
+    </config-file>
+    <config-file parent="CleverTapToken" target="*-Info.plist">
+        <string>0b2-a52</string>
+    </config-file>
+    <config-file parent="CleverTapEncryptionLevel" target="*-Info.plist">
+        <string>1</string>
+    </config-file>
+    <preference name="AllowInlineMediaPlayback" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="EnableViewportScale" value="false" />
+    <preference name="MediaTypesRequiringUserActionForPlayback" value="none" />
+    <preference name="SuppressesIncrementalRendering" value="false" />
+    <preference name="SuppressesLongPressGesture" value="false" />
+    <preference name="Suppresses3DTouchGesture" value="false" />
+    <preference name="android-build-tool" value="gradle" />
+    <preference name="AndroidXEnabled" value="true" />
+    <preference name="android-minSdkVersion" value="21" />
+    <preference name="android-targetSdkVersion" value="34" />
+    <preference name="Orientation" value="portrait" />
+    <preference name="deployment-target" value="12.0" />
+    <feature name="CleverTapPlugin">
+        <param name="ios-package" value="CleverTapPlugin" />
+    </feature>
+</widget>

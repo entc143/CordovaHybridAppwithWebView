@@ -1,0 +1,66 @@
+#import <Foundation/Foundation.h>
+#import "CleverTap.h"
+#if !CLEVERTAP_NO_INAPP_SUPPORT
+#import "CTInAppEvaluationManager.h"
+#import "CTInAppFCManager.h"
+#import "CTInAppStore.h"
+#endif
+#import "CTSessionManager.h"
+#import "CTCryptMigrator.h"
+
+@class CTInAppDisplayManager;
+@class CTFileDownloader;
+
+@interface CleverTap (Internal)
+
+typedef NS_ENUM(NSInteger, CleverTapEventType) {
+    CleverTapEventTypePage,
+    CleverTapEventTypePing,
+    CleverTapEventTypeProfile,
+    CleverTapEventTypeRaised,
+    CleverTapEventTypeData,
+    CleverTapEventTypeNotificationViewed,
+    CleverTapEventTypeFetch,
+};
+
+#if !CLEVERTAP_NO_INAPP_SUPPORT
+@property (strong, nonatomic, nullable) CleverTapFetchInAppsBlock fetchInAppsBlock;
+@property (nonatomic, strong, readonly) CTInAppDisplayManager * _Nullable inAppDisplayManager;
+@property (nonatomic, strong, readonly) CTInAppEvaluationManager * _Nullable inAppEvaluationManager;
+@property (nonatomic, strong, readonly) CTInAppFCManager * _Nullable inAppFCManager;
+@property (nonatomic, strong, readonly) CTInAppStore * _Nullable inAppStore;
+@property (nonatomic, strong, readonly) CTImpressionManager * _Nullable impressionManager;
+@property (nonatomic, assign, readonly) BOOL isAppForeground;
+@property (nonatomic, strong, readonly) CTDeviceInfo * _Nonnull deviceInfo;
+@property (nonatomic, strong, readonly) CTCryptMigrator * _Nonnull cryptMigrator;
+@property (atomic, strong, readonly) CTSessionManager * _Nonnull sessionManager;
+@property (nonatomic, strong, readonly) CTCustomTemplatesManager * _Nullable customTemplatesManager;
+#endif
+
+@property (nonatomic, strong, readonly) CTFileDownloader * _Nullable fileDownloader;
+
+@property (atomic, assign, readonly) BOOL isUserSwitching;
+
++ (NSMutableDictionary<NSString *, CleverTap *> * _Nullable)getInstances;
+
+- (void)recordInAppNotificationStateEvent:(BOOL)clicked
+                          forNotification:(CTInAppNotification * _Nonnull)notification andQueryParameters:(NSDictionary * _Nullable)params;
+
+- (void)fetchInAppPreviewContent:(NSString* _Nullable)url onSuccess:(void(^ _Nonnull)(NSDictionary* _Nullable inappJSON))completion;
+
+- (id <CleverTapURLDelegate> _Nullable)urlDelegate;
+
+/*!
+ @method
+ 
+ @abstract
+ Fetch in-action in-app content from backend after inactionDuration expires
+ 
+ @discussion
+ Sends wzrk_fetch event with t=6 and target ID
+ 
+ @param inAppId the campaign ID (ti) to fetch content for
+ */
+- (void)fetchInactionInApps:(NSString *_Nonnull)inAppId;
+
+@end

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport"
+          content="initial-scale=1, width=device-width, height=device-height, viewport-fit=cover" />
+    <title>Thank You</title>
+    <style>
+        * { box-sizing: border-box; }
+        html, body {
+            margin: 0; padding: 0; min-height: 100%;
+            font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(160deg, #0d1b2a 0%, #1b263b 100%);
+            color: #e0e1dd;
+        }
+        .wrap { padding: 40px 20px 32px; text-align: center; }
+        .check {
+            width: 84px; height: 84px; margin: 0 auto 18px;
+            border-radius: 50%; background: #2a9d8f;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 44px; color: #fff;
+        }
+        h1 { font-size: 30px; margin: 0 0 6px; }
+        .sub { color: #8d99ae; font-size: 15px; margin-bottom: 8px; }
+
+        .banners { margin-top: 26px; text-align: left; }
+        .banners-title {
+            font-size: 12px; letter-spacing: 1px; text-transform: uppercase;
+            color: #8d99ae; margin: 0 0 12px 4px;
+        }
+        .banner {
+            display: flex; align-items: center; gap: 14px;
+            background: #1b263b; border: 1px solid #2b3a55;
+            border-radius: 14px; padding: 14px; margin-bottom: 12px;
+            box-shadow: 0 4px 14px rgba(0,0,0,.3);
+        }
+        .banner img {
+            width: 64px; height: 64px; border-radius: 10px; object-fit: cover;
+            background: #0d1b2a; flex: 0 0 auto;
+        }
+        .banner .b-text { flex: 1; }
+        .banner .b-title { font-weight: 700; font-size: 16px; }
+        .banner .b-msg { font-size: 13px; color: #b8c0cc; margin-top: 2px; }
+        .banner .b-cta {
+            font-size: 12px; color: #4cc9f0; margin-top: 6px; font-weight: 700;
+        }
+        .empty {
+            background: #1b263b; border: 1px dashed #2b3a55; border-radius: 14px;
+            padding: 18px; color: #8d99ae; font-size: 13px; text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="check">&#10003;</div>
+        <h1>Thank you!</h1>
+        <p class="sub">You're all set. Thanks for using CordovaHybridAppwithWebView.</p>
+
+        <section class="banners">
+            <p class="banners-title">Recommended for you</p>
+            <div id="banner-list">
+                <div class="empty">Loading personalized banners…</div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    /**
+     * ThankYouPage — renders CleverTap Native Display banners inside the WebView
+     * and talks back to the Cordova app through the WebView bridge.
+     *
+     * Outbound messages use the InAppBrowser bridge handler `cordova_iab`
+     * (the analogue of React Native's window.ReactNativeWebView.postMessage).
+     */
+    var ThankYouPage = {
+
+        /** Sends a JSON message back to the native Cordova layer. */
+        post: function (msg) {
+            var s = JSON.stringify(msg);
+            try {
+                if (window.webkit && window.webkit.messageHandlers &&
+                    window.webkit.messageHandlers.cordova_iab) {
+                    window.webkit.messageHandlers.cordova_iab.postMessage(s);
+                    return;
+                }
+            } catch (e) { /* fall through */ }
+            // Fallbacks for other environments (RN / older IAB / browser preview).
+            if (window.ReactNativeWebView) { window.ReactNativeWebView.postMessage(s); }
+            else { console.log('[ThankYouPage] post:', s); }
+        },
+
+        /** Reads a field from a display unit, trying several known key names. */
+        field: function (unit, keys) {
+            var content = (unit.content && unit.content[0]) ? unit.content[0] : unit;
+            for (var i = 0; i < keys.length; i++) {
+                var k = keys[i];
+                if (content[k] && content[k].text) { return content[k].text; }
+                if (typeof content[k] === 'string' && content[k]) { return content[k]; }
+                if (unit[k]) { return unit[k]; }
+            }
+            return '';
+        },
+
+        unitId: function (unit) {
+            return unit.unitID || unit.wzrk_id || unit.wzrk_pivot || unit.id || '';
+        },
+
+        /** Renders all injected Native Display units as banners. */
+        render: function () {
+            var units = window.__NATIVE_DISPLAY_UNITS__ || [];
+            var list = document.getElementById('banner-list');
+            list.innerHTML = '';
+
+            if (!units.length) {
+                list.innerHTML = '<div class="empty">No active Native Display campaign right now.</div>';
+                return;
+            }
+
+            var self = this;
+            units.forEach(function (unit) {
+                var id = self.unitId(unit);
+                var title = self.field(unit, ['title', 'titleText']) || 'Special offer';
+                var msg = self.field(unit, ['message', 'messageText', 'body']) || '';
+                var img = self.field(unit, ['icon', 'media', 'imageUrl', 'image']) || '';
+                var cta = self.field(unit, ['actionText', 'cta']) || 'Learn more';
+
+                var el = document.createElement('div');
+                el.className = 'banner';
+                el.innerHTML =
+                    (img ? '<img src="' + img + '" alt="banner" />' : '') +
+                    '<div class="b-text">' +
+                        '<div class="b-title"></div>' +
+                        '<div class="b-msg"></div>' +
+                        '<div class="b-cta"></div>' +
+                    '</div>';
+                el.querySelector('.b-title').textContent = title;
+                el.querySelector('.b-msg').textContent = msg;
+                el.querySelector('.b-cta').textContent = cta;
+
+                // Native Display "notification VIEWED" — fired as the banner renders.
+                self.post({ type: 'displayUnitViewed', unitId: id });
+
+                // Native Display "notification CLICKED" — fired on tap.
+                el.addEventListener('click', function () {
+                    self.post({ type: 'displayUnitClicked', unitId: id });
+                });
+
+                list.appendChild(el);
+            });
+        },
+
+        /** Runs on page load: fires the "thankss you" event, then renders. */
+        init: function () {
+            // Trigger event -> "thankss you" when the user lands on this page.
+            this.post({
+                type: 'recordEvent',
+                eventName: 'thankss you',
+                data: { 'Screen': 'ThankYou', 'Viewed At': new Date().toISOString() }
+            });
+
+            // If the native side already injected units, render now; otherwise
+            // it will call window.ThankYouPage.render() after injection (loadstop).
+            if (window.__NATIVE_DISPLAY_UNITS__) { this.render(); }
+        }
+    };
+
+    window.ThankYouPage = ThankYouPage;
+    document.addEventListener('DOMContentLoaded', function () { ThankYouPage.init(); });
+    </script>
+</body>
+</html>

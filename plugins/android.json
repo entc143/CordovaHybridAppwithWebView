@@ -1,0 +1,22 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "cordova-plugin-inappbrowser": {
+      "PACKAGE_NAME": "com.clevertap.cordovahybridappwithwebview"
+    },
+    "clevertap-cordova": {
+      "CLEVERTAP_ACCOUNT_ID": "R57-R8W-557Z",
+      "CLEVERTAP_TOKEN": "0b2-a52",
+      "CLEVERTAP_REGION": " ",
+      "FIREBASE_MESSAGING_VERSION": "23.0.6",
+      "PACKAGE_NAME": "com.clevertap.cordovahybridappwithwebview"
+    }
+  },
+  "dependent_plugins": {}
+}

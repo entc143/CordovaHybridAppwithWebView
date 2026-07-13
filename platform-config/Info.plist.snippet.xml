@@ -1,0 +1,45 @@
+<!--
+  ============================================================================
+  Info.plist — CleverTap reference snippet (iOS)
+  ============================================================================
+  Add these keys to your app's *-Info.plist (applied by the <config-file>
+  blocks in config.xml under <platform name="ios">).
+
+  Ref:
+    https://developer.clevertap.com/docs/cordova-quick-start-guide  (iOS)
+    https://developer.clevertap.com/docs/cordova-push-notification   (iOS push)
+  ============================================================================
+-->
+<plist version="1.0">
+<dict>
+    <!-- CleverTap account credentials -->
+    <key>CleverTapAccountID</key>
+    <string>R57-R8W-557Z</string>
+
+    <key>CleverTapToken</key>
+    <string>0b2-a52</string>
+
+    <!-- Encrypt PII: 0=None, 1=Medium -->
+    <key>CleverTapEncryptionLevel</key>
+    <string>1</string>
+
+    <!-- Background modes so pushes are handled in background / killed states -->
+    <key>UIBackgroundModes</key>
+    <array>
+        <string>remote-notification</string>
+    </array>
+
+    <!-- Required when using APNs push -->
+    <key>aps-environment</key>
+    <string>development</string>
+</dict>
+</plist>
+
+<!--
+  NOTE (iOS push impression tracking):
+  For iOS, foreground pushes surface via the CleverTap SDK; background/killed
+  pushes surface when the notification is opened and the app launches/resumes.
+  The onPushNotification listener + recordEventWithName('Push Impression', ...)
+  wiring in clevertap-service.js records the impression with the app state.
+  Call CleverTap.registerPush() (done in CleverTapService.init) to register APNs.
+-->

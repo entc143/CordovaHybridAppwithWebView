@@ -1,0 +1,71 @@
+<!--
+  ============================================================================
+  AndroidManifest.xml — CleverTap reference snippet
+  ============================================================================
+  These entries are applied automatically by the <config-file>/<edit-config>
+  blocks in config.xml on `cordova prepare android`. They are reproduced here
+  so you can verify the final platforms/android/app/src/main/AndroidManifest.xml.
+
+  Ref:
+    https://developer.clevertap.com/docs/cordova-quick-start-guide  (Android)
+    https://developer.clevertap.com/docs/cordova-push-notification   (Android push)
+  ============================================================================
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Permissions -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Android 13+ runtime notification permission -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!--
+      IMPORTANT: use CleverTap's Application class so notification opens,
+      in-app notifications, deep links and lifecycle events are tracked.
+    -->
+    <application
+        android:name="com.clevertap.android.sdk.Application"
+        android:allowBackup="true"
+        android:label="@string/app_name">
+
+        <!-- CleverTap account credentials -->
+        <meta-data
+            android:name="CLEVERTAP_ACCOUNT_ID"
+            android:value="R57-R8W-557Z" />
+        <meta-data
+            android:name="CLEVERTAP_TOKEN"
+            android:value="0b2-a52" />
+
+        <!-- Encrypt PII (Email/Identity/Name/Phone): 0=None, 1=Medium -->
+        <meta-data
+            android:name="CLEVERTAP_ENCRYPTION_LEVEL"
+            android:value="1" />
+
+        <!-- Optional: default notification icon / accent color for pushes -->
+        <meta-data
+            android:name="CLEVERTAP_NOTIFICATION_ICON"
+            android:value="ic_stat_notify" />
+
+        <!-- FCM message listener for CleverTap's default push handling.
+             This delivers the push in foreground, background AND killed states. -->
+        <service
+            android:name="com.clevertap.android.sdk.pushnotification.fcm.FcmMessageListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Deep-link scheme example (used for push-open routing) -->
+        <activity android:name="MainActivity">
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="cordovahybridapp" />
+            </intent-filter>
+        </activity>
+
+    </application>
+</manifest>

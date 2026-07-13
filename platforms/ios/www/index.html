@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <!-- Content Security Policy: allow inline styles and CleverTap/webview assets -->
+    <meta http-equiv="Content-Security-Policy"
+          content="default-src 'self' data: gap: https://ssl.gstatic.com 'unsafe-eval';
+                   style-src 'self' 'unsafe-inline';
+                   script-src 'self' 'unsafe-inline';
+                   media-src *; img-src 'self' data: https:; connect-src *;" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <meta name="viewport"
+          content="initial-scale=1, width=device-width, height=device-height, viewport-fit=cover" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>CordovaHybridAppwithWebView</title>
+</head>
+<body>
+    <div class="app">
+        <header class="app-header">
+            <h1 class="app-title">CordovaHybridAppwithWebView</h1>
+            <span id="ct-status" class="ct-status">CleverTap: initializing…</span>
+        </header>
+
+        <main class="home">
+            <!-- Live date + time -->
+            <section class="clock-card">
+                <div id="live-date" class="live-date">--</div>
+                <div id="live-time" class="live-time">--:--:--</div>
+            </section>
+
+            <!-- Auto-incrementing counter -->
+            <section class="counter-card">
+                <div class="counter-label">Live Counter</div>
+                <div id="counter" class="counter-value">0</div>
+                <div id="counter-state" class="counter-state">running</div>
+            </section>
+
+            <!-- Action buttons -->
+            <section class="button-row">
+                <button id="btn-stop" class="btn btn-stop">Stop Counter</button>
+                <button id="btn-thankyou" class="btn btn-primary">Continue &rarr;</button>
+            </section>
+        </main>
+
+        <footer class="app-footer">
+            <small>CleverTap Cordova Sample &middot; Account R57-R8W-557Z</small>
+        </footer>
+    </div>
+
+    <!-- Cordova runtime (injected by the build; present on device) -->
+    <script type="text/javascript" src="cordova.js"></script>
+
+    <!-- App code -->
+    <script type="text/javascript" src="js/clevertap-service.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+</body>
+</html>
