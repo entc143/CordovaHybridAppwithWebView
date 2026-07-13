@@ -1,8 +1,8 @@
 ================================================================================
  CordovaHybridAppwithWebView — CleverTap Integration Guide
 ================================================================================
- Account ID : R57-R8W-557Z
- Token      : 0b2-a52
+ Account ID : xxxxx
+ Token      : xxxxx
  Platforms  : Android + iOS (Apache Cordova)
  SDK        : clevertap-cordova (native Android SDK 8.x / iOS 7.x)
 
@@ -100,8 +100,8 @@ From the project root, add the plugin passing the Account ID and Token as
 plugin variables (note the DOUBLE-DASH before "variable"):
 
    cordova plugin add https://github.com/CleverTap/clevertap-cordova.git \
-     --variable CLEVERTAP_ACCOUNT_ID="R57-R8W-557Z" \
-     --variable CLEVERTAP_TOKEN="0b2-a52"
+     --variable CLEVERTAP_ACCOUNT_ID="xxxxxx" \
+     --variable CLEVERTAP_TOKEN="xxxxx"
 
 Also add the WebView plugin used to host the Thank-You page fallback:
 
@@ -120,16 +120,16 @@ native settings so you don't hand-edit AndroidManifest/Info.plist.
 
    <!-- Plugin + credentials -->
    <gap:plugin name="clevertap-cordova" source="npm">
-       <param name="CLEVERTAP_ACCOUNT_ID" value="R57-R8W-557Z" />
-       <param name="CLEVERTAP_TOKEN" value="0b2-a52" />
+       <param name="CLEVERTAP_ACCOUNT_ID" value="xxxxxx" />
+       <param name="CLEVERTAP_TOKEN" value="xxxxx" />
    </gap:plugin>
 
    <preference name="AndroidXEnabled" value="true" />
 
    <platform name="android">
        <config-file target="AndroidManifest.xml" parent="/manifest/application">
-           <meta-data android:name="CLEVERTAP_ACCOUNT_ID" android:value="R57-R8W-557Z"/>
-           <meta-data android:name="CLEVERTAP_TOKEN"      android:value="0b2-a52"/>
+           <meta-data android:name="CLEVERTAP_ACCOUNT_ID" android:value="xxxxxxx"/>
+           <meta-data android:name="CLEVERTAP_TOKEN"      android:value="xxxxxx"/>
            <meta-data android:name="CLEVERTAP_ENCRYPTION_LEVEL" android:value="1"/>
        </config-file>
        <!-- Use CleverTap's Application class (MANDATORY) -->
@@ -155,10 +155,10 @@ native settings so you don't hand-edit AndroidManifest/Info.plist.
 
    <platform name="ios">
        <config-file target="*-Info.plist" parent="CleverTapAccountID">
-           <string>R57-R8W-557Z</string>
+           <string>xxxxxxxxx</string>
        </config-file>
        <config-file target="*-Info.plist" parent="CleverTapToken">
-           <string>0b2-a52</string>
+           <string>xxxxxx</string>
        </config-file>
    </platform>
 
